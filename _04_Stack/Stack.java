@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EmptyStackException;
 
-public class Stack<E> implements StackInterface {
+public class Stack<E> implements StackInterface<E> {
 
     private static final int DEFAULT_CAPACITY = 10; //최소 용적 크기
     private static final Object[] EMPTY_ARRAY = {}; //빈 배열
