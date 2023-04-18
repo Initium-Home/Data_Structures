@@ -16,7 +16,7 @@ public class ArrayQueue<E> implements Queue<E> {
     private int rear;   // 마지막 인덱스를 가리키는 변수
 
     // 생성자1 (초기 용적 할당을 안할 경우)
-    public ArrayQueue() {
+    public ArrayQueue() { 
 
         this.array = new Object[DEFAULT_CAPACITY];
         this.size = 0;

@@ -30,4 +30,5 @@ public interface Queue<E> {
      * @return 큐의 첫 번 째 요소
      */
     E peek();
+
 }
