@@ -2,6 +2,8 @@ package _03_DoublyLinkedList;
 
 import Interface_form.List;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 
 public class DLinkedList<E> implements List<E> {
@@ -333,7 +335,72 @@ public class DLinkedList<E> implements List<E> {
         size = 0;
     }
 
+    public Object clone() throws CloneNotSupportedException {
 
+        @SuppressWarnings("unchecked")
+        DLinkedList<? super E> clone = (DLinkedList<? super E>) super.clone();
+
+        // super.clone()은 shallow copy 이므로 clone 한 리스트의
+        // array 를 새로 생성해서 해당 배열에 copy 해주어야 함.
+        clone.head = null;
+        clone.tail = null;
+        clone.size = 0;
+
+        for (Node<E> x = head; x != null; x = x.next) {
+            clone.addLast(x.data);
+        }
+
+        return clone;
+    }
+
+    public Object[] toArray() {
+
+        Object[] array = new Object[size];
+        int idx = 0;
+        for (Node<E> x = head; x != null; x = x.next) {
+            array[idx++] = (E) x.data;
+        }
+        return array;
+    }
+
+    public <T> T[] toArray(T[] a) {
+
+        if (a.length < size) {
+            // Array.newInstance(컴포넌트 타입, 생성할 크기)
+            a = (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), size);
+        }
+        // shallow copy 로 copy 한 result 의 값은 a 에도 영향을 미치는 것을 활용함
+        int i = 0;
+        Object[] result = a;
+        for (Node<E> x = head; x != null; x = x.next) {
+            result[i++] = x.data;
+        }
+        return a;
+    }
+
+    public void sort() {
+        /**
+         * Comparator 를 넘겨주지 않는 경우 해당 객체의 Comparable 에
+         * 구현된 정렬 방식을 확인하고
+         * 구현되어 있지 않으면 cannot be cast to class java.lang.Comparable
+         * 에러가 발생한다
+         * 구현되어 있으면 null 을 파라미터를 넘기면
+         * Arrays.sort() 가 객체의 compareTo 메소드에 정의된 방식대로 정렬한다.
+         */
+        sort(null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void sort(Comparator<? super E> c) {
+
+        Object[] a = this.toArray();
+        Arrays.sort(a, (Comparator) c);
+
+        int i = 0;
+        for (Node<E> x = head; x != null; x = x.next) {
+            x.data = (E) a[i];
+        }
+    }
 }
 
 
