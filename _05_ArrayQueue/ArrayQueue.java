@@ -74,7 +74,7 @@ public class ArrayQueue<E> implements Queue<E> {
     }
 
     @Override
-    public E pull() {
+    public E poll() {
 
         if (size == 0) {
             return null;
@@ -99,7 +99,7 @@ public class ArrayQueue<E> implements Queue<E> {
 
     public E remove() {
 
-        E item = pull();
+        E item = poll();
 
         if (item == null) {
             throw new NoSuchElementException();

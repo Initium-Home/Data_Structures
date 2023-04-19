@@ -22,7 +22,7 @@ public interface Queue<E> {
      *
      * @return 삭제된 요소 반환
      */
-    E pull();
+    E poll();
 
     /**
      * 큐의 첫 번째 요소를 반환합니다.
