@@ -1,6 +1,8 @@
 package _09_Heap;
 
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 
 public class Heap<E> {
 
@@ -44,7 +46,7 @@ public class Heap<E> {
     }
 
     // 받은 인덱스의 자식 노드 인덱스를 반환
-    private int getChild(int index) {
+    private int getLeftChild(int index) {
 
         return index * 2;
     }
@@ -148,6 +150,151 @@ public class Heap<E> {
             idx = parent;
         }
         array[idx] = comp;
+    }
+
+    @SuppressWarnings("unchecked")
+    public E remove() {
+
+        if (array[1] == null) { // root 가 비어있을 경우 예외처리
+            throw new NoSuchElementException();
+        }
+
+        E result = (E) array[1];    // 삭제된 요소 반환을 위한 임시 변수
+        E target = (E) array[size]; // 타겟이 될 요소
+        array[size] = null;
+
+        // 삭제 할 노드의 인덱스와 이후 재배치 할 타겟 노드를 넘겨줌
+        siftDown(1, target);    // 루트 노드가 삭제되므로 1을 넘겨준다.
+
+        return result;
+    }
+
+    /**
+     * @param idx   삭제 할 노드의 인덱스
+     * @param target    재배치 할 노드
+     */
+    private void siftDown(int idx, E target) {
+
+        // comparator 가 존재 할 경우 comparator 사용
+        if (comparator != null) {
+            siftDownComparator(idx, target, comparator);
+        }
+        else {
+            siftDownComparable(idx, target);
+        }
+    }
+
+    // Comparator 을 이용한 sift-down
+    @SuppressWarnings("unchecked")
+    private void siftDownComparator(int idx, E target, Comparator<? super E> comp) {
+
+        array[idx] = null;  // 삭제 할 인덱스의 노드를 삭제
+        size--;
+
+        int parent = idx;   // 삭제노드부터 시작 할 부모를 가리키는 변수
+        int child;  // 교환 될 자식을 기리키는 변수
+
+        // 왼쪽 자식 노드의 인덱스가 요소의 개수보다 작을 때 까지 반복
+        while ((child = getLeftChild(parent)) <= size) {
+
+            int right = getRightChild(parent);  // 오른쪽 자식 인덱스
+
+            Object childVal = array[child]; // 왼쪽 자식의 값 (교환 될 값)
+
+            /*
+             * 오른쪽 자식 인덱스가 size 를 넘지 않으면서
+             * 왼쪽 자식이 오른쪽 자식보다 큰 경우
+             * 재배치 할 노드는 작은 자식과 비교해야하므로 child 와 childVal 을
+             * 오른쪽 자식으로 바꾼다
+             */
+            if (right <= size && comp.compare((E) childVal, (E) array[right]) > 0) {
+                child = right;
+                childVal = array[child];
+            }
+
+            // 재배치 할 노드가 자식 노드보다 작을 경우 반복문 종료
+            if (comp.compare(target, (E) childVal) <= 0) {
+                break;
+            }
+
+            /*
+             * 현재 부모 인덱스에 자식 노드 값을 넣고
+             * 부모 인덱스를 자식 인덱스로 바꾸어 줌
+             */
+            array[parent] = childVal;
+            parent = child;
+        }
+
+        // 최종적으로 재배치 되는 위치에 타겟 값을 넣어줌
+        array[parent] = target;
+
+        /*
+         * 용적의 사이즈가 최소 용적보다는 크면서 요소의 개수가 전체 용적의 1/4일 경우
+         * 용적을 바능로 줄임 (단, 최소용적보단 커야 함)
+         */
+        if (array.length > DEFAULT_CAPACITY && size < array.length / 4) {
+            resize(Math.max(array.length/2, DEFAULT_CAPACITY));
+        }
+    }
+
+    // Comparable 을 이용한 sift-down
+    @SuppressWarnings("unchecked")
+    private void siftDownComparable(int idx, E target) {
+
+        Comparable<? super E> comp = (Comparable<? super E>) target;
+
+        array[idx] = null;
+        size--;
+
+        int parent = idx;
+        int child;
+
+        while ((child = getLeftChild(parent)) <= size) {
+
+            int right = getRightChild(parent);
+
+            Object childVal = array[child];
+
+            if (right <= size && ((Comparable<? super E>) childVal).compareTo((E) array[right]) > 0) {
+                child = right;
+                childVal = array[child];
+            }
+
+            if (comp.compareTo((E) childVal) <= 0) {
+                break;
+            }
+            array[parent] = childVal;
+            parent = child;
+        }
+        array[parent] = comp;
+
+        if (array.length > DEFAULT_CAPACITY && size < array.length / 4) {
+            resize(Math.max(array.length/2, DEFAULT_CAPACITY));
+        }
+    }
+
+    public int size() {
+
+        return size;
+    }
+
+    @SuppressWarnings("unchecked")
+    public E peek() {
+
+        if (array[1] == null) {
+            throw new NoSuchElementException();
+        }
+        return (E) array[1];
+    }
+
+    public boolean isEmpty() {
+
+        return size == 0;
+    }
+
+    public Object[] toArray() {
+
+        return Arrays.copyOf(array, size + 1);
     }
 
 
